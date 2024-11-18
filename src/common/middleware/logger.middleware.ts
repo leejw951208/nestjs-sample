@@ -13,7 +13,9 @@ export class LoggerMiddleware implements NestMiddleware {
     // 응답이 끝나는 이벤트가 발생하면 로그를 찍는다.
     res.on('finish', () => {
       const { statusCode } = res;
-      this.logger.log(`${method} ${originalUrl} ${statusCode} ${ip} ${userAgent}`);
+      const date = new Date();
+      const format = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+      this.logger.log(`${format} ${method} ${originalUrl} ${statusCode} ${ip} ${userAgent}`);
     });
 
     next();
