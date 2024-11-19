@@ -1,4 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller('sample')
-export class SampleController {}
+export class SampleController {
+  @Get('/')
+  async getSample() {
+    return 'sample';
+  }
+}
