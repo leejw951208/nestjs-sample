@@ -4,12 +4,23 @@ import { AppService } from './app.service';
 import { SampleModule } from './sample/sample.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { CommonModule } from './common/common.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './common/config/type-orm.config';
 import { UserModule } from './user/user.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), SampleModule, CommonModule, UserModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: `./env/.env.${process.env.NODE_ENV}`,
+      isGlobal: true,
+      cache: true,
+      load: [],
+    }),
+    SampleModule,
+    CommonModule,
+    UserModule,
+    PrismaModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
