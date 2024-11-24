@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
 import { ResUserDto } from './dto/res-user.dto';
 import { plainToInstance } from 'class-transformer';
+import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -21,8 +21,8 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<User> {
+    return await this.userService.findOne(+id);
   }
 
   @Patch(':id')

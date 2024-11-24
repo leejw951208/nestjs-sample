@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
 import * as bcryptjs from 'bcryptjs';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -20,8 +21,8 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<User> {
+    return await this.prisma.user.findFirst({ where: { id } });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

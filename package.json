@@ -18,10 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:migrate": "read -p \"실행 환경(.env): \" node_env && read -p \"마이그레이션 파일 이름: \" file_name && dotenv -e ./env/.env.$node_env -- npx prisma migrate dev --name $file_name",
-    "db:generate": "read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma generate",
-    "db:pull": "read -p \"데이터베이스 동기화를 진행합니다. (계속 하려면 Enter 클릭)\" temp && read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma db pull",
-    "db:reset": "read -p \"데이터베이스 초기화를 진행합니다. (계속 하려면 Enter 클릭)\" temp && read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma migrate reset"
+    "db:migrate": "read -p \"실행 환경(.env): \" node_env && read -p \"마이그레이션 파일 이름: \" file_name && dotenv -e ./env/.env.$node_env -- npx prisma migrate dev --schema=./prisma/schema --name $file_name",
+    "db:generate": "read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma generate --schema=./prisma/schema",
+    "db:pull": "read -p \"데이터베이스 동기화를 진행합니다. (계속 하려면 Enter 클릭)\" temp && read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma db pull  --schema=./prisma/schema",
+    "db:reset": "read -p \"데이터베이스 초기화를 진행합니다. (계속 하려면 Enter 클릭)\" temp && read -p \"실행 환경(.env): \" node_env && dotenv -e ./env/.env.$node_env -- npx prisma migrate reset  --schema=./prisma/schema"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -68,7 +68,7 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.3"
+    "typescript": "^5.7.2"
   },
   "jest": {
     "moduleFileExtensions": [
