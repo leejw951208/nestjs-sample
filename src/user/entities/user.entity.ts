@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { SignupReqDto } from '../../common/auth/dto/signup-req.dto';
 
 export class UserEntity implements User {
   id: number | null;
@@ -12,8 +12,8 @@ export class UserEntity implements User {
     Object.assign(this, { email, password, name });
   }
 
-  static create(createUserDto: CreateUserDto): UserEntity {
-    const { email, password, name } = createUserDto;
+  static create(reqDto: SignupReqDto): UserEntity {
+    const { email, password, name } = reqDto;
     return new UserEntity(email, password, name);
   }
 }

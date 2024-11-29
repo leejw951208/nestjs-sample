@@ -5,6 +5,8 @@ import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResDto } from './dto/auth-res.dto';
+import { SignupReqDto } from './dto/signup-req.dto';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +35,13 @@ export class AuthService {
     const refreshToken = await this.createRefreshToken(user);
 
     return AuthResDto.create(accessToken, refreshToken, user);
+  }
+
+  async signup(reqDto: SignupReqDto): Promise<string> {
+    const hashedPassword = await bcryptjs.hash(reqDto.password, 10);
+    const userEntity = UserEntity.create(Object.assign(reqDto, { password: hashedPassword }));
+    await this.prisma.user.create({ data: userEntity });
+    return 'succeed!';
   }
 
   private async createAccessToken(user: User): Promise<string> {
