@@ -1,12 +1,14 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel> implements OnModuleInit {
-  private readonly logger = new Logger(PrismaService.name);
-
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+  ) {
     super({
       datasources: {
         db: {
@@ -18,18 +20,6 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Pris
           emit: 'event',
           level: 'query',
         },
-        {
-          emit: 'event',
-          level: 'info',
-        },
-        {
-          emit: 'event',
-          level: 'warn',
-        },
-        {
-          emit: 'event',
-          level: 'error',
-        },
       ],
     });
   }
@@ -37,16 +27,7 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Pris
     await this.$connect();
 
     this.$on('query', ({ query, params }) => {
-      this.logger.log(`${query}; ${params}`);
-    });
-    this.$on('info', ({ message }) => {
-      this.logger.verbose(message);
-    });
-    this.$on('warn', ({ message }) => {
-      this.logger.warn(message);
-    });
-    this.$on('error', ({ message }) => {
-      this.logger.error(message);
+      this.logger.debug(`${query}: ${params}`);
     });
   }
 }
