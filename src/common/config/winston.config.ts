@@ -1,8 +1,9 @@
 import { utilities } from 'nest-winston';
 import * as winston from 'winston';
+import * as winstonDaily from 'winston-daily-rotate-file';
 
 const IS_PROD = process.env['NODE_ENV'] === 'prod';
-const LOG_DIR = process.cwd() + '/logs';
+const LOG_DIR = process.cwd() + `/logs`;
 
 export const dailyOptions = (level: string) => {
   return {
@@ -11,18 +12,20 @@ export const dailyOptions = (level: string) => {
     dirname: LOG_DIR + `/${level}`,
     filename: `%DATE%.${level}.log`,
     zippedArchive: true,
-    maxSize: '20m',
+    maxSize: '10m',
     maxFiles: '14d',
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      utilities.format.nestLike(process.env.NODE_ENV, { colors: false, prettyPrint: true }),
+    ),
   };
 };
 
-export const createConsoleTransport = () => {
-  return new winston.transports.Console({
+export const winstonTransports = [
+  new winston.transports.Console({
     level: IS_PROD ? 'info' : 'silly',
-    // production 환경이라면 info, 개발환경이라면 모든 단계를 로그
     format: IS_PROD
-      ? // production 환경은 자원을 아끼기 위해 simple 포맷 사용
-        winston.format.simple()
+      ? winston.format.simple()
       : winston.format.combine(
           winston.format.timestamp(),
           utilities.format.nestLike('NestJS-Basic', {
@@ -32,5 +35,7 @@ export const createConsoleTransport = () => {
             appName: true,
           }),
         ),
-  });
-};
+  }),
+  new winstonDaily(dailyOptions('info')),
+  new winstonDaily(dailyOptions('error')),
+];

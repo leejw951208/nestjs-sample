@@ -7,7 +7,8 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './common/auth/auth.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CommonModule } from './common/common.module';
+import { WinstonModule } from 'nest-winston';
+import { winstonTransports } from './common/config/winston.config';
 
 @Module({
   imports: [
@@ -17,11 +18,13 @@ import { CommonModule } from './common/common.module';
       cache: true,
       load: [],
     }),
+    WinstonModule.forRoot({
+      transports: winstonTransports,
+    }),
     SampleModule,
     UserModule,
     PrismaModule,
     AuthModule,
-    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
