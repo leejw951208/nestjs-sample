@@ -6,6 +6,7 @@ export class UserEntity implements User {
   email: string;
   password: string;
   name: string;
+  teamId: number;
   createdAt: Date | null;
 
   private constructor(email: string, password: string, name: string) {

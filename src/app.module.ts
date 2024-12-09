@@ -9,6 +9,7 @@ import { AuthModule } from './common/auth/auth.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { WinstonModule } from 'nest-winston';
 import { winstonTransports } from './common/config/winston.config';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { winstonTransports } from './common/config/winston.config';
     UserModule,
     PrismaModule,
     AuthModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService],
