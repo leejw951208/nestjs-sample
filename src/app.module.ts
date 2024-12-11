@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SampleModule } from './sample/sample.module';
@@ -7,9 +7,9 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './common/auth/auth.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { WinstonModule } from 'nest-winston';
-import { winstonTransports } from './common/config/winston.config';
 import { TeamModule } from './team/team.module';
+import { WinstonModule } from 'nest-winston';
+import { winstonModuleAsyncOptions } from './common/config/winston.config';
 
 @Module({
   imports: [
@@ -19,9 +19,7 @@ import { TeamModule } from './team/team.module';
       cache: true,
       load: [],
     }),
-    WinstonModule.forRoot({
-      transports: winstonTransports,
-    }),
+    WinstonModule.forRootAsync(winstonModuleAsyncOptions),
     SampleModule,
     UserModule,
     PrismaModule,
