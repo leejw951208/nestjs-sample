@@ -1,0 +1,37 @@
+services:
+  local:
+    image: nestjs-sample:${COMMIT_SHA}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5' # 최대 50% CPU 사용
+          memory: 512M # 최대 512MB 메모리 사용
+        reservations:
+          cpus: '0.25' # 최소 25% CPU 예약
+          memory: 256M # 최소 256MB 메모리 예약
+      replicas: 2 # 실행될 컨테이너 개수
+      update_config:
+        parallelism: 1 # 한번에 업데이트할 컨테이너 수
+        delay: 10s # 컨테이너 업데이트 사이 지연 시간
+      restart_policy:
+        condition: on-failure # 컨테이너 실패 시 재시작 조건
+        max_attempts: 3 # 재시도 횟수
+        delay: 5s # 재시작 간격
+        window: 30s # 재시도 제한 시간
+    ports:
+      - '3001:3000'
+    env_file:
+      - ./env/.env.local
+    networks:
+      - local_overlay
+    command: sh -c 'yarn db:migrate && yarn start:prod'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s # 서비스 시작 대기 시간
+
+networks:
+  local_overlay:
+    external: true

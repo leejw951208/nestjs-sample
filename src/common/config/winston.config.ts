@@ -17,7 +17,7 @@ export const dailyOptions = (level: string) => {
     maxFiles: '14d',
     format: winston.format.combine(
       winston.format.timestamp(),
-      utilities.format.nestLike('NestJS-Basic', {
+      utilities.format.nestLike('NestJS-Sample', {
         colors: false,
         prettyPrint: true,
         appName: true,
@@ -31,7 +31,7 @@ const consoleOptions: ConsoleTransportOptions = {
     ? winston.format.simple()
     : winston.format.combine(
         winston.format.timestamp(),
-        utilities.format.nestLike('NestJS-Basic', {
+        utilities.format.nestLike('NestJS-Sample', {
           colors: true,
           prettyPrint: true, // nest에서 제공하는 옵션. 로그 가독성을 높여줌
           appName: true,
@@ -41,7 +41,7 @@ const consoleOptions: ConsoleTransportOptions = {
 
 export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
   useFactory: () => ({
-    level: 'debug',
+    level: IS_PROD ? 'info' : 'debug',
     transports: [
       new winston.transports.Console(consoleOptions),
       new winstonDaily(dailyOptions('info')),
