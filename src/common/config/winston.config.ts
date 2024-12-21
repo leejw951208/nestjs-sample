@@ -44,8 +44,25 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
     level: IS_PROD ? 'info' : 'debug',
     transports: [
       new winston.transports.Console(consoleOptions),
-      new winstonDaily(dailyOptions('info')),
       new winstonDaily(dailyOptions('error')),
+      new winstonDaily({
+        ...dailyOptions('info'),
+        level: 'info',
+        format: winston.format.combine(
+          winston.format((info) => {
+            if (info.level === 'error') {
+              return false;
+            }
+            return info;
+          })(),
+          winston.format.timestamp(),
+          utilities.format.nestLike('NestJS-Sample', {
+            colors: false,
+            prettyPrint: true,
+            appName: true,
+          }),
+        ),
+      }),
     ],
   }),
 };
