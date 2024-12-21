@@ -1,0 +1,6 @@
+model LoginHistory {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  loginTime  DateTime
+  logoutTime DateTime?
+}

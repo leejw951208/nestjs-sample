@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import * as bcryptjs from 'bcryptjs';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -9,17 +9,19 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { UserModel } from '../user/model/user.model';
 import { BaseException } from '../common/exception/base.exception';
 import { NOT_FOUND, UNAUTHORIZED } from '../common/exception/error.code';
+import { PRISMA_INJECTION_TOKEN } from '../../prisma/prisma.module';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    // private readonly prisma: PrismaService,
+    @Inject(PRISMA_INJECTION_TOKEN) private readonly prisma: PrismaService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.prisma.user.findFirst({ where: { email } });
+    const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name);
     }
