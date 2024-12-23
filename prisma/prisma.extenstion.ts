@@ -10,9 +10,6 @@ const findOpertions = [
 ] as const;
 type FindOperation = (typeof findOpertions)[number];
 
-const deleteOperations = ['delete', 'deleteMany'] as const;
-type DeleteOperation = (typeof deleteOperations)[number];
-
 export const filterSoftDeleted = Prisma.defineExtension({
   name: 'filterSoftDeleted',
   query: {
@@ -26,6 +23,49 @@ export const filterSoftDeleted = Prisma.defineExtension({
               args.where = { ...args.where, deletedAt: null };
             }
           }
+        }
+        return query(args);
+      },
+    },
+  },
+});
+
+export const create = Prisma.defineExtension({
+  name: 'create',
+  query: {
+    $allModels: {
+      async create({ model, operation, args, query }) {
+        if (!('deletedAt' in args.data)) {
+          args.data.createdBy = 0;
+        }
+        return query(args);
+      },
+      async createMany({ model, operation, args, query }) {
+        const data = Array.isArray(args.data) ? args.data : [args.data];
+        if (!data.some((item) => 'deletedAt' in item)) {
+          args.data = Array.isArray(args.data)
+            ? args.data.map((item) => ({ ...item, createdBy: 0 }))
+            : { ...args.data, createdBy: 0 };
+        }
+        return query(args);
+      },
+    },
+  },
+});
+
+export const update = Prisma.defineExtension({
+  name: 'update',
+  query: {
+    $allModels: {
+      async update({ model, operation, args, query }) {
+        if (!('deletedAt' in args.data)) {
+          args.data.updatedBy = 0;
+        }
+        return query(args);
+      },
+      async updateMany({ model, operation, args, query }) {
+        if (!('deletedAt' in args.data)) {
+          args.data.updatedBy = 0;
         }
         return query(args);
       },

@@ -15,15 +15,16 @@ export class UserService {
   ) {}
 
   async findById(id: number): Promise<User> {
-    return await this.prisma.user.findUniqueOrThrow({ where: { id } });
+    return await this.prisma.user.findUnique({ where: { id } });
   }
 
   async update(id: number, reqDto: UpdateUserDto): Promise<User> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id } });
-    return await this.prisma.user.update({
+    await this.prisma.user.updateMany({
       where: { id: user.id },
       data: reqDto,
     });
+    return user;
   }
 
   async remove(id: number): Promise<User> {
