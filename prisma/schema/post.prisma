@@ -2,11 +2,11 @@ model Post {
   id        Int       @id @default(autoincrement())
   title     String
   content   String
-  userId    Int
-  createdAt DateTime  @default(now())
-  createdBy Int
-  updatedAt DateTime? @updatedAt
-  updatedBy Int?
-  deletedAt DateTime?
-  deletedBy Int?
+  userId    Int       @map("user_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy Int       @map("created_by")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedBy Int?      @map("updated_by")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy Int?      @map("deleted_by")
 }

@@ -2,23 +2,24 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request }
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@prisma/client';
+import { Public } from 'src/common/decorator/public.decorator';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
-  async findById(@Param('id') id: string): Promise<User> {
-    return await this.userService.findById(+id);
-  }
+    @Get(':id')
+    async findById(@Param('id') id: string): Promise<User> {
+        return await this.userService.findById(+id);
+    }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.userService.update(+id, updateUserDto);
-  }
+    @Patch(':id')
+    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+        return await this.userService.update(+id, updateUserDto);
+    }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<User> {
-    return await this.userService.remove(+id);
-  }
+    @Delete(':id')
+    async remove(@Param('id') id: string): Promise<User> {
+        return await this.userService.remove(+id);
+    }
 }

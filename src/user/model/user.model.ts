@@ -1,8 +1,8 @@
-import { BaseModel } from '../../common/base/base.model';
+import { PrismaModel } from '../../common/prisma/prisma.model';
 import { SignupReqDto } from '../../auth/dto/signup-req.dto';
 import { User } from '@prisma/client';
 
-export class UserModel extends BaseModel implements User {
+export class UserModel extends PrismaModel implements User {
   email: string;
   password: string;
   name: string;

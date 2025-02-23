@@ -1,4 +1,4 @@
-export class BaseModel {
+export class PrismaModel {
   id: number | null;
   createdAt: Date;
   createdBy: number;
