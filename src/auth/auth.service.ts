@@ -40,15 +40,13 @@ export class AuthService {
     async signup(reqDto: SignupReqDto): Promise<string> {
         const hashedPassword = await bcryptjs.hash(reqDto.password, 10);
         const userModel = UserModel.create(Object.assign(reqDto, { password: hashedPassword }));
-        await this.prisma.user.create({ data: userModel });
+        await this.prisma.user.create({ data: { ...userModel } });
         return 'succeed!';
     }
 
     private async createAccessToken(user: User): Promise<string> {
         const payload = {
             id: user.id,
-            email: user.email,
-            name: user.name,
             type: 'ac'
         };
 

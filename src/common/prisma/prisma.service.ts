@@ -3,12 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { filterSoftDeleted, softDelete, update } from './prisma.extenstion';
+import { create, filterSoftDeleted, softDelete, update } from './prisma.extenstion';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel> implements OnModuleInit {
     constructor(
         private readonly configService: ConfigService,
+        private readonly clsService: ClsService,
         @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger
     ) {
         super({
@@ -23,7 +25,6 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Pris
                     level: 'query'
                 }
             ]
-            
         });
         this.$on('query', ({ query, params }) => {
             this.logger.debug(`${query}: ${params}`);
@@ -35,6 +36,9 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Pris
     }
 
     extensions() {
-        return this.$extends(filterSoftDeleted).$extends(softDelete).$extends(update);
+        return this.$extends(filterSoftDeleted)
+            .$extends(create(this.clsService))
+            .$extends(update(this.clsService))
+            .$extends(softDelete(this.clsService));
     }
 }

@@ -1,5 +1,3 @@
-import { PrismaClient } from '@prisma/client';
-
 export const PrismaErrorMessage = {
     P2002: '중복된 데이터가 존재합니다.',
     P2003: '참조 무결성 제약 조건을 위반했습니다.',
