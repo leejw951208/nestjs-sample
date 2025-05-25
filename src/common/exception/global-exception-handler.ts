@@ -4,11 +4,10 @@ import { Logger } from 'winston';
 import { Inject } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { BaseException } from './base.exception';
-import { BAD_REQUEST, IErrorCodes, INTERNAL_SERVER_ERROR, NOT_FOUND } from './error.code';
+import { BAD_REQUEST, IErrorCodes, INTERNAL_SERVER_ERROR, NOT_FOUND, PRISMA } from './error.code';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library';
-import { PrismaErrorMessage } from '../prisma/prisma.exception.message';
 
-export class HttpExceptionFilter implements ExceptionFilter {
+export class GlobalExceptionHandler implements ExceptionFilter {
     constructor(@Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger) {}
 
     catch(exception: HttpException, host: ArgumentsHost) {
@@ -47,10 +46,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
             this.logger.error(`HTTP Exception: ${exception}`, json);
             response.status(status).json(json);
         } else if (exception instanceof PrismaClientKnownRequestError) {
-            const status = HttpStatus.BAD_REQUEST;
+            const code = exception.code as keyof typeof PRISMA;
+            const prismaError = PRISMA[code] ?? PRISMA.GENERAL;
+            const status = prismaError.statusCode;
             const json = {
-                ...BAD_REQUEST.GENERAL,
-                message: PrismaErrorMessage[exception.code] ?? exception,
+                ...prismaError,
+                message: prismaError.message,
                 timestamp: new Date().toISOString(),
                 path: request.url
             };
