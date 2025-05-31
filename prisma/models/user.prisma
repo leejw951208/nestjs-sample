@@ -1,6 +1,6 @@
 enum UserStatus {
-  DEACTIVATE
-  ACTIVATE
+  DEACTIVATED
+  ACTIVATED
 }
 
 model User {
@@ -8,7 +8,8 @@ model User {
   email     String     @unique
   password  String
   name      String
-  status    UserStatus @default(ACTIVATE)
+  status    UserStatus @default(ACTIVATED)
+  posts     Post[]
   createdAt DateTime   @default(now()) @map("created_at")
   createdBy Int        @map("created_by")
   updatedAt DateTime?  @updatedAt @map("updated_at")

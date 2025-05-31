@@ -1,24 +1,41 @@
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthResDto } from './dto/auth-res.dto';
-import { SignupReqDto } from './dto/signup-req.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { Public } from '../common/decorator/public.decorator';
+import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { LoginRequestDto } from './dto/login-request.dto'
+import { JoinRequestDto } from './dto/join-request.dto'
+import { AuthGuard } from '@nestjs/passport'
+import { Public } from '../_common/decorator/public.decorator'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { CurrentUser } from '../_common/decorator/user.decorator'
+import { UserModel } from '../user/model/user.model'
+import { LoginResponseDto } from './dto/login-response.dto'
 
-@Controller('auth')
+const path = 'auth'
+@ApiTags(path)
+@ApiBearerAuth('JWT-Auth')
+@Controller({ path })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {}
 
-  @Public()
-  @UseGuards(AuthGuard('local'))
-  @Post('signin')
-  signin(@Request() req: any): Promise<AuthResDto> {
-    return this.authService.siginin(req.user);
-  }
+    @ApiOperation({
+        summary: '로그인'
+    })
+    @ApiBody({ type: JoinRequestDto })
+    @ApiResponse({ status: 201 })
+    @Public()
+    @Post('join')
+    async join(@Body() reqDto: JoinRequestDto): Promise<void> {
+        await this.authService.join(reqDto)
+    }
 
-  @Public()
-  @Post('signup')
-  async signup(@Body() reqDto: SignupReqDto): Promise<string> {
-    return await this.authService.signup(reqDto);
-  }
+    @ApiOperation({
+        summary: '로그인'
+    })
+    @ApiBody({ type: LoginRequestDto })
+    @ApiResponse({ status: 200, type: LoginResponseDto })
+    @Public()
+    @UseGuards(AuthGuard('local'))
+    @Post('login')
+    async login(@CurrentUser() user: UserModel): Promise<LoginRequestDto> {
+        return await this.authService.login(user)
+    }
 }
