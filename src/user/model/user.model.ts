@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer'
 import { PrismaModel } from '../../_common/prisma/prisma.model'
 import { JoinRequestDto } from '../../auth/dto/join-request.dto'
 import { User, UserStatus } from '@prisma/client'

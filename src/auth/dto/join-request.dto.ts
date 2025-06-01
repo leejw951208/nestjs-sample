@@ -15,7 +15,7 @@ export class JoinRequestDto {
     })
     password: string
 
-    @ApiProperty({ type: String, required: true, description: '이름', example: '회원' })
+    @ApiProperty({ type: String, required: true, description: '이름', example: '홍길동' })
     @IsNotEmpty({ message: '이름은 필수입니다.' })
     @IsString({ message: '이름은 문자열입니다.' })
     name: string

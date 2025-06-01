@@ -11,7 +11,7 @@ import { Logger } from 'winston'
 import { Inject } from '@nestjs/common'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 import { BaseException } from './base.exception'
-import { BAD_REQUEST, IErrorCodes, SERVER_ERROR, NOT_FOUND, PRISMA } from './error.code'
+import { BAD_REQUEST, IErrorCodes, SERVER_ERROR, NOT_FOUND } from './error.code'
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library'
 
 @Catch()
@@ -78,32 +78,6 @@ export class GlobalExceptionHandler implements ExceptionFilter {
                 ...baseResponse,
                 ...NOT_FOUND.GENERAL,
                 message: exception.message
-            }
-            this.logger.error(`HTTP Exception: ${exception}`, json)
-            response.status(status).json(json)
-            return
-        }
-
-        // 4. PrismaClientKnownRequestError
-        if (exception instanceof PrismaClientKnownRequestError) {
-            const code = exception.code as keyof typeof PRISMA
-            const prismaError = PRISMA[code] ?? PRISMA.GENERAL
-            const status = prismaError.status
-            const json = {
-                ...baseResponse,
-                ...prismaError
-            }
-            this.logger.error(`HTTP Exception: ${exception}`, json)
-            response.status(status).json(json)
-            return
-        }
-
-        // 5. PrismaClientValidationError
-        if (exception instanceof PrismaClientValidationError) {
-            const status = HttpStatus.BAD_REQUEST
-            const json = {
-                ...baseResponse,
-                ...BAD_REQUEST.GENERAL
             }
             this.logger.error(`HTTP Exception: ${exception}`, json)
             response.status(status).json(json)

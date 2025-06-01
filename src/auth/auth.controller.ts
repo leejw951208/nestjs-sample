@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common'
+import {
+    Controller,
+    Post,
+    Body,
+    Request,
+    UseGuards,
+    UseInterceptors,
+    ClassSerializerInterceptor,
+    HttpStatus
+} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginRequestDto } from './dto/login-request.dto'
 import { JoinRequestDto } from './dto/join-request.dto'
@@ -17,10 +26,10 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @ApiOperation({
-        summary: '로그인'
+        summary: '회원가입'
     })
     @ApiBody({ type: JoinRequestDto })
-    @ApiResponse({ status: 201 })
+    @ApiResponse({ status: HttpStatus.CREATED })
     @Public()
     @Post('join')
     async join(@Body() reqDto: JoinRequestDto): Promise<void> {
@@ -31,11 +40,11 @@ export class AuthController {
         summary: '로그인'
     })
     @ApiBody({ type: LoginRequestDto })
-    @ApiResponse({ status: 200, type: LoginResponseDto })
+    @ApiResponse({ status: HttpStatus.OK, type: LoginResponseDto })
     @Public()
     @UseGuards(AuthGuard('local'))
     @Post('login')
-    async login(@CurrentUser() user: UserModel): Promise<LoginRequestDto> {
+    async login(@CurrentUser() user: UserModel): Promise<LoginResponseDto> {
         return await this.authService.login(user)
     }
 }

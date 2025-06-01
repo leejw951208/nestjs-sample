@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { UserResponseDto } from '../../user/dto/user-response.dto'
+import { Type } from 'class-transformer'
 
 export class LoginResponseDto {
     @ApiProperty({ type: String, description: '액세스 토큰', example: '1q2w3e4r' })

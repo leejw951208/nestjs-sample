@@ -1,9 +1,8 @@
-import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import * as bcryptjs from 'bcryptjs'
 import { User } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
-import { LoginRequestDto } from './dto/login-request.dto'
 import { JoinRequestDto } from './dto/join-request.dto'
 import { PrismaService } from '../_common/prisma/prisma.service'
 import { UserModel } from '../user/model/user.model'
@@ -11,6 +10,8 @@ import { BaseException } from '../_common/exception/base.exception'
 import { NOT_FOUND, UNAUTHORIZED } from '../_common/exception/error.code'
 import { PRISMA_SERVICE } from '../_common/prisma/prisma.module'
 import { plainToInstance } from 'class-transformer'
+import { LoginResponseDto } from './dto/login-response.dto'
+import { UserResponseDto } from '../user/dto/user-response.dto'
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,10 @@ export class AuthService {
     }
 
     async validate(email: string, password: string): Promise<User> {
-        const user = await this.prisma.user.findUniqueOrThrow({ where: { email } })
+        const user = await this.prisma.user.findUnique({ where: { email } })
+        if (!user) {
+            throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        }
         const isMatched = await bcryptjs.compare(password, user.password)
         if (!isMatched) {
             throw new BaseException(UNAUTHORIZED.PASSWORD_NOT_MATCHED, this.constructor.name)
@@ -35,15 +39,14 @@ export class AuthService {
         return user
     }
 
-    async login(user: UserModel): Promise<LoginRequestDto> {
+    async login(user: UserModel): Promise<LoginResponseDto> {
         const accessToken = await this.createAccessToken(user)
         const refreshToken = await this.createRefreshToken(user)
-        return plainToInstance(LoginRequestDto, {
+        const userResponseDto = plainToInstance(UserResponseDto, user, { excludeExtraneousValues: true })
+        return plainToInstance(LoginResponseDto, {
             accessToken,
             refreshToken,
-            id: user.id,
-            email: user.email,
-            name: user.name
+            userResponseDto
         })
     }
 
