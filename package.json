@@ -18,9 +18,9 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "db:generate": "node prisma/scripts/generate.ts",
-        "db:migrate": "node prisma/scripts/migrate.ts",
-        "db:reset": "node prisma/scripts/db-reset.ts"
+        "db:generate": "node prisma/scripts/generate.js",
+        "db:migrate": "node prisma/scripts/migrate.js",
+        "db:reset": "node prisma/scripts/db-reset.js"
     },
     "dependencies": {
         "@nestjs/common": "^11.1.2",

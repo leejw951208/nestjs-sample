@@ -1,7 +1,7 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { NextFunction, Request, Response } from 'express';
-import { ClsService } from 'nestjs-cls';
+import { Injectable, NestMiddleware } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { NextFunction, Request, Response } from 'express'
+import { ClsService } from 'nestjs-cls'
 
 @Injectable()
 export class CustomClsMiddleware implements NestMiddleware {
@@ -12,20 +12,20 @@ export class CustomClsMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         this.cls.run(() => {
-            const authHeader = req.headers['authorization'];
+            const authHeader = req.headers.authorization
             if (authHeader && authHeader.startsWith('Bearer ')) {
-                const token = authHeader.slice(7);
-                const { id } = this.jwtService.verify<{ id: number }>(token);
-                this.cls.set('userId', id);
+                const token = authHeader.slice(7)
+                const { id } = this.jwtService.decode<{ id: number }>(token)
+                this.cls.set('userId', id)
             }
 
-            const userAgent = req.headers['user-agent'] ?? 'unknown';
-            this.cls.set('userAgent', userAgent);
+            const userAgent = req.headers['user-agent'] ?? 'unknown'
+            this.cls.set('userAgent', userAgent)
 
-            const clientIp = req.headers['x-forwarded-for']?.[0]?.trim() || req.socket.remoteAddress;
-            this.cls.set('clientIp', clientIp);
+            const clientIp = req.headers['x-forwarded-for']?.[0]?.trim() || req.socket.remoteAddress
+            this.cls.set('clientIp', clientIp)
 
-            next();
-        });
+            next()
+        })
     }
 }
