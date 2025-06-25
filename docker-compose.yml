@@ -1,20 +1,20 @@
 services:
-  local:
-    image: nestjs-sample:${COMMIT_SHA}
-    container_name: nestjs-sample
-    ports:
-      - '3001:3000'
-    env_file:
-      - ./env/.env.local
-    networks:
-      - local_bridge
-    command: ['node', 'dist/src/main']
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    local:
+        image: nestjs-sample:${COMMIT_SHA}
+        container_name: nestjs-sample
+        ports:
+            - '3001:3000'
+        env_file:
+            - ./envs/.env.local
+        networks:
+            - local_bridge
+        command: ['node', 'dist/src/main']
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+            interval: 30s
+            timeout: 10s
+            retries: 3
 
 networks:
-  local_bridge:
-    external: true
+    local_bridge:
+        external: true

@@ -14,7 +14,7 @@ async function main() {
     rl.close()
 
     // 2) .env 파일 로드
-    const envFilePath = path.resolve(process.cwd(), `./env/.env.${env}`)
+    const envFilePath = path.resolve(process.cwd(), `./envs/.env.${env}`)
     dotenv.config({ path: envFilePath })
 
     // 3) 입력 검증

@@ -17,7 +17,7 @@ import { PostModule } from './post/post.module'
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: `./env/.env.${process.env.NODE_ENV}`,
+            envFilePath: `./envs/.env.${process.env.NODE_ENV}`,
             isGlobal: true,
             cache: true,
             load: []
