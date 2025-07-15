@@ -22,8 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     async validate(payload: JwtPayload) {
-        if (payload.key !== 'nsp') {
+        if (payload.type !== 'ac' || payload.key !== 'nsp') {
             throw new BaseException(UNAUTHORIZED.INVALID_ACCESS_TOKEN, this.constructor.name)
         }
+        return { userId: payload.userId }
     }
 }

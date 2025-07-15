@@ -1,18 +1,27 @@
 import {
-    ExceptionFilter,
-    Catch,
     ArgumentsHost,
+    BadRequestException,
+    Catch,
+    ExceptionFilter,
     HttpStatus,
+    Inject,
     NotFoundException,
-    BadRequestException
+    UnauthorizedException
 } from '@nestjs/common'
 import { Response } from 'express'
-import { Logger } from 'winston'
-import { Inject } from '@nestjs/common'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { Logger } from 'winston'
 import { BaseException } from './base.exception'
-import { BAD_REQUEST, IErrorCodes, SERVER_ERROR, NOT_FOUND } from './error.code'
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library'
+import { BAD_REQUEST, getErrorCode, IErrorCodes, NOT_FOUND, SERVER_ERROR } from './error.code'
+
+interface IBaseResponse {
+    timestamp?: string
+    path?: string
+    status?: number
+    errorCode?: string
+    message?: string
+    stack?: unknown
+}
 
 @Catch()
 export class GlobalExceptionHandler implements ExceptionFilter {
@@ -24,7 +33,7 @@ export class GlobalExceptionHandler implements ExceptionFilter {
         const request = ctx.getRequest()
 
         // 공통 필드
-        const baseResponse = {
+        const baseResponse: IBaseResponse = {
             timestamp: new Date().toISOString(),
             path: request.url
         }
@@ -35,24 +44,26 @@ export class GlobalExceptionHandler implements ExceptionFilter {
             const errorResponse = exception.getResponse() as IErrorCodes
             const message = errorResponse.message
             const logLevel = exception.logLevel
+
+            const exceptionResponse: IBaseResponse = {
+                ...baseResponse,
+                status: status,
+                errorCode: errorResponse.errorCode,
+                message
+            }
+
             if (logLevel === 'warn') {
                 this.logger.warn(`HTTP Exception: ${message}`, {
-                    ...baseResponse,
-                    status: status,
-                    errorCode: errorResponse.errorCode,
-                    message
+                    ...exceptionResponse,
+                    stack: exception.stack
                 })
             } else {
                 this.logger.error(`HTTP Exception: ${message}`, {
-                    ...baseResponse,
-                    status: status,
-                    errorCode: errorResponse.errorCode,
-                    message
+                    ...exceptionResponse,
+                    stack: exception.stack
                 })
             }
-            response
-                .status(status)
-                .json({ ...baseResponse, status: status, errorCode: errorResponse.errorCode, message })
+            response.status(status).json(exceptionResponse)
             return
         }
 
@@ -67,40 +78,44 @@ export class GlobalExceptionHandler implements ExceptionFilter {
                 ? errorResponse.message.join(', ')
                 : errorResponse.message
 
-            this.logger.error(`Validation Error: ${message}`, {
-                ...baseResponse,
-                status: status,
-                error: errorResponse.error
-            })
-            response.status(status).json({
+            const exceptionResponse: IBaseResponse = {
                 ...baseResponse,
                 status: status,
                 errorCode: BAD_REQUEST.GENERAL.errorCode,
                 message
-            })
+            }
+
+            this.logger.error(`HTTP Exception: ${message}`, { ...exceptionResponse, stack: exception.stack })
+            response.status(status).json(exceptionResponse)
             return
         }
 
         // 3. NotFoundException
         if (exception instanceof NotFoundException) {
-            const status = HttpStatus.NOT_FOUND
-            const json = {
+            const status = exception.getStatus()
+            const exceptionResponse: IBaseResponse = {
                 ...baseResponse,
                 ...NOT_FOUND.GENERAL,
-                message: exception.message
+                status: status
             }
-            this.logger.error(`HTTP Exception: ${exception}`, json)
-            response.status(status).json(json)
+            this.logger.error(`HTTP Exception: ${exception}`, {
+                ...exceptionResponse,
+                stack: exception.stack
+            })
+            response.status(status).json(exceptionResponse)
             return
         }
 
         // 6. 기타 예상치 못한 에러
-        const status = HttpStatus.INTERNAL_SERVER_ERROR
-        const json = {
+        const status = exception.getStatus()
+        const exceptionResponse: IBaseResponse = {
             ...baseResponse,
             ...SERVER_ERROR.GENERAL
         }
-        this.logger.error(`HTTP Exception: ${exception}`, json)
-        response.status(status).json(json)
+        this.logger.error(`HTTP Exception: ${exception}`, {
+            ...exceptionResponse,
+            stack: exception.stack
+        })
+        response.status(status).json(exceptionResponse)
     }
 }
