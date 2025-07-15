@@ -34,12 +34,22 @@ export class GlobalExceptionHandler implements ExceptionFilter {
             const status = exception.getStatus()
             const errorResponse = exception.getResponse() as IErrorCodes
             const message = errorResponse.message
-            this.logger.error(`HTTP Exception: ${message}`, {
-                ...baseResponse,
-                status: status,
-                errorCode: errorResponse.errorCode,
-                message
-            })
+            const logLevel = exception.logLevel
+            if (logLevel === 'warn') {
+                this.logger.warn(`HTTP Exception: ${message}`, {
+                    ...baseResponse,
+                    status: status,
+                    errorCode: errorResponse.errorCode,
+                    message
+                })
+            } else {
+                this.logger.error(`HTTP Exception: ${message}`, {
+                    ...baseResponse,
+                    status: status,
+                    errorCode: errorResponse.errorCode,
+                    message
+                })
+            }
             response
                 .status(status)
                 .json({ ...baseResponse, status: status, errorCode: errorResponse.errorCode, message })

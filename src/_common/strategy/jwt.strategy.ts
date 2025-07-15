@@ -1,7 +1,15 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { ConfigService } from '@nestjs/config'
+import { BaseException } from '../exception/base.exception'
+import { UNAUTHORIZED } from '../exception/error.code'
+
+interface JwtPayload {
+    userId: number
+    type: string
+    key: string
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -13,8 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         })
     }
 
-    async validate(payload: any) {
-        console.log('[JwtStrategy.validate] 호출됨') // <-- 이 로그가 찍혀야 전략이 정상 등록된 것
-        return { userId: payload.sub, email: payload.email }
+    async validate(payload: JwtPayload) {
+        if (payload.key !== 'nsp') {
+            throw new BaseException(UNAUTHORIZED.INVALID_ACCESS_TOKEN, this.constructor.name)
+        }
     }
 }

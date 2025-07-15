@@ -1,8 +1,8 @@
-import { ConfigService } from '@nestjs/config';
-import { utilities, WinstonModule, WinstonModuleAsyncOptions, WinstonModuleOptions } from 'nest-winston';
-import * as winston from 'winston';
-import * as winstonDaily from 'winston-daily-rotate-file';
-import { ConsoleTransportOptions } from 'winston/lib/winston/transports';
+import { ConfigService } from '@nestjs/config'
+import { utilities, WinstonModule, WinstonModuleAsyncOptions, WinstonModuleOptions } from 'nest-winston'
+import * as winston from 'winston'
+import * as winstonDaily from 'winston-daily-rotate-file'
+import { ConsoleTransportOptions } from 'winston/lib/winston/transports'
 
 export const dailyOptions = (level: string, logDir: string) => {
     return {
@@ -21,15 +21,16 @@ export const dailyOptions = (level: string, logDir: string) => {
                 appName: true
             })
         )
-    };
-};
+    }
+}
 
 export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
-        const nodeEnv = configService.get<string>('NODE_ENV');
-        const isProd = nodeEnv === 'prod';
-        const logDir = configService.get<string>('LOG_DIR') || process.cwd() + `/logs`;
+        const nodeEnv = configService.get<string>('NODE_ENV')
+        const isProd = nodeEnv === 'prod'
+        const logDir = configService.get<string>('LOG_DIR') || `logs`
+        const logLevel = isProd ? 'info' : 'debug'
 
         const consoleOptions: ConsoleTransportOptions = {
             format: isProd
@@ -42,22 +43,22 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
                           appName: true
                       })
                   )
-        };
+        }
 
         return {
-            level: isProd ? 'info' : 'debug',
+            level: logLevel,
             transports: [
                 new winston.transports.Console(consoleOptions),
                 new winstonDaily(dailyOptions('error', logDir)),
                 new winstonDaily({
-                    ...dailyOptions('info', logDir),
-                    level: 'info',
+                    ...dailyOptions('app', logDir),
+                    level: logLevel,
                     format: winston.format.combine(
                         winston.format((info) => {
                             if (info.level === 'error') {
-                                return false;
+                                return false
                             }
-                            return info;
+                            return info
                         })(),
                         winston.format.timestamp(),
                         utilities.format.nestLike('NestJS-Sample', {
@@ -68,6 +69,6 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
                     )
                 })
             ]
-        };
+        }
     }
-};
+}

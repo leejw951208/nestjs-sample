@@ -1,18 +1,18 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { APP_GUARD } from '@nestjs/core'
+import { WinstonModule } from 'nest-winston'
+import { ClsModule } from 'nestjs-cls'
+import { winstonModuleAsyncOptions } from './_common/config/winston.config'
+import { JwtGuard } from './_common/guard/jwt.guard'
+import { CustomClsMiddleware } from './_common/middleware/cls.middleware'
+import { LoggerMiddleware } from './_common/middleware/logger.middleware'
+import { PrismaModule } from './_common/prisma/prisma.module'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UserModule } from './user/user.module'
-import { PrismaModule } from './_common/prisma/prisma.module'
-import { ConfigModule } from '@nestjs/config'
-import { LoggerMiddleware } from './_common/middleware/logger.middleware'
-import { WinstonModule } from 'nest-winston'
-import { winstonModuleAsyncOptions } from './_common/config/winston.config'
 import { AuthModule } from './auth/auth.module'
-import { APP_GUARD } from '@nestjs/core'
-import { JwtGuard } from './_common/guard/jwt.guard'
-import { ClsModule } from 'nestjs-cls'
-import { CustomClsMiddleware } from './_common/middleware/cls.middleware'
 import { PostModule } from './post/post.module'
+import { UserModule } from './user/user.module'
 
 @Module({
     imports: [
@@ -39,8 +39,8 @@ export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(LoggerMiddleware)
-            .forRoutes({ path: '*', method: RequestMethod.ALL })
+            .forRoutes({ path: '*splat', method: RequestMethod.ALL })
             .apply(CustomClsMiddleware)
-            .forRoutes({ path: '*', method: RequestMethod.ALL })
+            .forRoutes({ path: '*splat', method: RequestMethod.ALL })
     }
 }
