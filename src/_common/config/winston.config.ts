@@ -33,16 +33,14 @@ export const winstonModuleAsyncOptions: WinstonModuleAsyncOptions = {
         const logLevel = isProd ? 'info' : 'debug'
 
         const consoleOptions: ConsoleTransportOptions = {
-            format: isProd
-                ? winston.format.simple()
-                : winston.format.combine(
-                      winston.format.timestamp(),
-                      utilities.format.nestLike('NestJS-Sample', {
-                          colors: true,
-                          prettyPrint: true,
-                          appName: true
-                      })
-                  )
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                utilities.format.nestLike('NestJS-Sample', {
+                    colors: true,
+                    prettyPrint: true,
+                    appName: true
+                })
+            )
         }
 
         return {

@@ -22,49 +22,49 @@ export class PostService {
     ) {}
 
     async findPage(searchCondition: PostPageableRequestDto): Promise<[PostResponseDto[], number]> {
-        const findPosts = await this.prisma.post.findMany({
-            orderBy: { createdAt: 'desc' },
+        const foundPosts = await this.prisma.post.findMany({
+            orderBy: { id: 'desc' },
             skip: (searchCondition.page - 1) * searchCondition.size,
             take: searchCondition.size
         })
 
         const totalCount = await this.prisma.post.count({})
 
-        return [plainToInstance(PostResponseDto, findPosts, { excludeExtraneousValues: true }), totalCount]
+        return [plainToInstance(PostResponseDto, foundPosts, { excludeExtraneousValues: true }), totalCount]
     }
 
     async findById(id: number): Promise<PostResponseDto> {
-        const findPost = await this.prisma.post.findFirst({ where: { id } })
-        if (!findPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
-        return plainToInstance(PostResponseDto, findPost, { excludeExtraneousValues: true })
+        const foundPost = await this.prisma.post.findFirst({ where: { id } })
+        if (!foundPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
+        return plainToInstance(PostResponseDto, foundPost, { excludeExtraneousValues: true })
     }
 
     async save(reqDto: PostSaveDto): Promise<void> {
         const userId = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id: userId } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        const foundUser = await this.prisma.user.findFirst({ where: { id: userId } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
 
-        const createdPost = PostModel.create(userId, reqDto)
+        const createdPost = { ...new PostModel(), ...reqDto, userId }
         await this.prisma.post.create({ data: createdPost })
     }
 
     async update(id: number, reqDto: PostUpdateDto): Promise<void> {
         const userId = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id: userId } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        const foundUser = await this.prisma.user.findFirst({ where: { id: userId } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
 
-        const findPost = await this.prisma.post.findFirst({ where: { id } })
-        if (!findPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
-        await this.prisma.post.update({ where: { id }, data: { ...findUser, ...reqDto } })
+        const foundPost = await this.prisma.post.findFirst({ where: { id } })
+        if (!foundPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
+        await this.prisma.post.update({ where: { id }, data: { ...foundUser, ...reqDto } })
     }
 
     async delete(id: number): Promise<void> {
         const userId = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id: userId } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        const foundUser = await this.prisma.user.findFirst({ where: { id: userId } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
 
-        const findPost = await this.prisma.post.findFirst({ where: { id } })
-        if (!findPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
+        const foundPost = await this.prisma.post.findFirst({ where: { id } })
+        if (!foundPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
         await this.prisma.post.delete({ where: { id } })
     }
 }

@@ -36,13 +36,13 @@ export const create = (clsService: ClsService) =>
         query: {
             $allModels: {
                 async create({ args, query }) {
-                    args.data = { ...args.data, createdBy: clsService.get('userId') ?? 0 }
+                    args.data = { ...args.data, createdBy: clsService.get('userId') }
                     return query(args)
                 },
                 async createMany({ args, query }) {
                     args.data = Array.isArray(args.data)
-                        ? args.data.map((data) => ({ ...data, createdBy: clsService.get('userId') ?? 0 }))
-                        : { ...args.data, createdBy: clsService.get('userId') ?? 0 }
+                        ? args.data.map((data) => ({ ...data, createdBy: clsService.get('userId') }))
+                        : { ...args.data, createdBy: clsService.get('userId') }
                     return query(args)
                 }
             }
@@ -55,17 +55,17 @@ export const update = (clsService: ClsService) =>
         query: {
             $allModels: {
                 async update({ args, query }) {
-                    args.data = { ...args.data, updatedBy: clsService.get('userId') ?? 0, updatedAt: new Date() }
+                    args.data = { ...args.data, updatedBy: clsService.get('userId'), updatedAt: new Date() }
                     return query(args)
                 },
                 async updateMany({ args, query }) {
                     args.data = Array.isArray(args.data)
                         ? args.data.map((data) => ({
                               ...data,
-                              updatedBy: clsService.get('userId') ?? 0,
+                              updatedBy: clsService.get('userId'),
                               updatedAt: new Date()
                           }))
-                        : { ...args.data, updatedBy: clsService.get('userId') ?? 0, updatedAt: new Date() }
+                        : { ...args.data, updatedBy: clsService.get('userId'), updatedAt: new Date() }
                     return query(args)
                 }
             }
@@ -82,14 +82,14 @@ export const softDelete = (clsService: ClsService) =>
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).update({
                         ...where,
-                        data: { isDeleted: true, deletedBy: clsService.get('userId') ?? 0, deletedAt: new Date() }
+                        data: { isDeleted: true, deletedBy: clsService.get('userId'), deletedAt: new Date() }
                     })
                 },
                 async deleteMany<T>(this: T, where: Prisma.Args<T, 'deleteMany'>['where']) {
                     const context = Prisma.getExtensionContext(this)
                     return await (context as any).updateMany({
                         ...where,
-                        data: { isDeleted: true, deletedBy: clsService.get('userId') ?? 0, deletedAt: new Date() }
+                        data: { isDeleted: true, deletedBy: clsService.get('userId'), deletedAt: new Date() }
                     })
                 }
             }

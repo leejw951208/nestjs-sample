@@ -23,20 +23,20 @@ export class AuthService {
 
     async join(reqDto: JoinRequestDto): Promise<void> {
         const hashedPassword = await bcryptjs.hash(reqDto.password, 10)
-        const createdUser = UserModel.create({ ...reqDto, password: hashedPassword })
+        const createdUser = { ...new UserModel(), ...reqDto, password: hashedPassword }
         await this.prisma.user.create({ data: createdUser })
     }
 
     async validate(email: string, password: string): Promise<User> {
-        const findUser = await this.prisma.user.findFirst({ where: { email } })
-        if (!findUser) {
+        const foundUser = await this.prisma.user.findFirst({ where: { email } })
+        if (!foundUser) {
             throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
         }
-        const isMatched = await bcryptjs.compare(password, findUser.password)
+        const isMatched = await bcryptjs.compare(password, foundUser.password)
         if (!isMatched) {
             throw new BaseException(UNAUTHORIZED.PASSWORD_NOT_MATCHED, this.constructor.name)
         }
-        return findUser
+        return foundUser
     }
 
     async login(user: UserModel): Promise<LoginResponseDto> {

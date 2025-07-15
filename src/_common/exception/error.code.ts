@@ -10,6 +10,22 @@ export interface IErrorCodes {
     message: string
 }
 
+export const getErrorCode = (status: number) => {
+    switch (status) {
+        case 400:
+            return BAD_REQUEST.GENERAL
+        case 401:
+            return UNAUTHORIZED.GENERAL
+        case 403:
+            return FORBIDDEN.GENERAL
+        case 404:
+            return NOT_FOUND.GENERAL
+        case 500:
+            return SERVER_ERROR.GENERAL
+        default:
+    }
+}
+
 export const NOT_FOUND: {
     [key in NotFoundType]: IErrorCodes
 } = {
@@ -31,7 +47,7 @@ export const UNAUTHORIZED: {
     GENERAL: {
         status: 401,
         errorCode: 'UNAUTHORIZED_001',
-        message: '권한이 없습니다.'
+        message: '리소스 접근 권한이 없습니다.'
     },
     INVALID_ACCESS_TOKEN: {
         status: 401,
