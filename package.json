@@ -20,7 +20,8 @@
         "test:e2e": "jest --config ./test/jest-e2e.json",
         "db:generate": "node prisma/scripts/generate.js",
         "db:migrate": "node prisma/scripts/migrate.js",
-        "db:reset": "node prisma/scripts/db-reset.js"
+        "db:reset": "node prisma/scripts/db-reset.js",
+        "env:create": "node scripts/create-env.js"
     },
     "dependencies": {
         "@nestjs/common": "^11.1.2",

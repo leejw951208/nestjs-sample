@@ -52,8 +52,9 @@ export class AuthService {
 
     private async createAccessToken(user: User): Promise<string> {
         const payload = {
-            id: user.id,
-            type: 'ac'
+            userId: user.id,
+            type: 'ac',
+            key: 'nsp'
         }
 
         return await this.jwtService.signAsync(payload, {
@@ -64,8 +65,9 @@ export class AuthService {
 
     private async createRefreshToken(user: User): Promise<string> {
         const payload = {
-            id: user.id,
-            type: 're'
+            userId: user.id,
+            type: 're',
+            key: 'nsp'
         }
 
         return await this.jwtService.signAsync(payload, {

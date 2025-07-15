@@ -21,7 +21,7 @@ export class UserService {
     async findOne(): Promise<UserResponseDto> {
         const id = this.clsService.get('userId')
         const findUser = await this.prisma.user.findFirst({ where: { id } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name, 'warn')
         return plainToInstance(UserResponseDto, findUser, {
             excludeExtraneousValues: true
         })

@@ -1,12 +1,8 @@
-import { Controller, Get, Body, Patch, Param, Delete, HttpStatus, UseGuards } from '@nestjs/common'
-import { UserService } from './user.service'
-import { UserUpdateDto } from './dto/user-update.dto'
-import { User } from '@prisma/client'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Public } from '../_common/decorator/public.decorator'
+import { Body, Controller, Delete, Get, HttpStatus, Patch } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { UserResponseDto } from './dto/user-response.dto'
-import { ClsService } from 'nestjs-cls'
-import { JwtGuard } from '../_common/guard/jwt.guard'
+import { UserUpdateDto } from './dto/user-update.dto'
+import { UserService } from './user.service'
 
 const path = 'user'
 @ApiTags(path)
@@ -16,7 +12,7 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @ApiOperation({
-        summary: '조회'
+        summary: '내 정보 조회'
     })
     @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
     @Get('me')
@@ -25,7 +21,7 @@ export class UserController {
     }
 
     @ApiOperation({
-        summary: '수정'
+        summary: '내 정보 수정'
     })
     @ApiBody({ type: UserUpdateDto })
     @ApiResponse({ status: HttpStatus.OK })
@@ -35,7 +31,7 @@ export class UserController {
     }
 
     @ApiOperation({
-        summary: '삭제'
+        summary: '내 정보 삭제'
     })
     @ApiResponse({ status: HttpStatus.OK })
     @Delete('me')
