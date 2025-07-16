@@ -11,6 +11,8 @@ import {
 import { AuthService } from './auth.service'
 import { LoginRequestDto } from './dto/login-request.dto'
 import { JoinRequestDto } from './dto/join-request.dto'
+import { RefreshTokenRequestDto } from './dto/refresh-token-request.dto'
+import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto'
 import { AuthGuard } from '@nestjs/passport'
 import { Public } from '../_common/decorator/public.decorator'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
@@ -46,5 +48,16 @@ export class AuthController {
     @Post('login')
     async login(@CurrentUser() user: UserModel): Promise<LoginResponseDto> {
         return await this.authService.login(user)
+    }
+
+    @ApiOperation({
+        summary: '토큰 재발급'
+    })
+    @ApiBody({ type: RefreshTokenRequestDto })
+    @ApiResponse({ status: HttpStatus.OK, type: RefreshTokenResponseDto })
+    @Public()
+    @Post('refresh')
+    async refreshToken(@Body() reqDto: RefreshTokenRequestDto): Promise<RefreshTokenResponseDto> {
+        return await this.authService.refreshToken(reqDto.refreshToken)
     }
 }

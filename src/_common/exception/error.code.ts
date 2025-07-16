@@ -1,4 +1,4 @@
-type UnauthorizedType = 'GENERAL' | 'INVALID_ACCESS_TOKEN' | 'PASSWORD_NOT_MATCHED'
+type UnauthorizedType = 'GENERAL' | 'INVALID_ACCESS_TOKEN' | 'INVALID_REFRESH_TOKEN' | 'PASSWORD_NOT_MATCHED'
 type ForbiddenType = 'GENERAL'
 type NotFoundType = 'GENERAL' | 'USER_NOT_FOUND'
 type BadRequestType = 'GENERAL' | 'MISSING_ACCESS_TOKEN'
@@ -54,9 +54,14 @@ export const UNAUTHORIZED: {
         errorCode: 'UNAUTHORIZED_002',
         message: '유효하지 않은 인증 토큰입니다.'
     },
-    PASSWORD_NOT_MATCHED: {
+    INVALID_REFRESH_TOKEN: {
         status: 401,
         errorCode: 'UNAUTHORIZED_003',
+        message: '유효하지 않은 리프레시 토큰입니다.'
+    },
+    PASSWORD_NOT_MATCHED: {
+        status: 401,
+        errorCode: 'UNAUTHORIZED_004',
         message: '비밀번호가 일치하지 않습니다.'
     }
 }

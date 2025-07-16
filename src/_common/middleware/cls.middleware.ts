@@ -12,11 +12,12 @@ export class CustomClsMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         this.cls.run(() => {
+            this.cls.set('userId', 0)
             const authHeader = req.headers.authorization
             if (authHeader && authHeader.startsWith('Bearer ')) {
                 const token = authHeader.slice(7)
                 const { userId } = this.jwtService.decode<{ userId: number }>(token)
-                this.cls.set('userId', userId ?? 0)
+                this.cls.set('userId', userId)
             }
 
             const userAgent = req.headers['user-agent'] ?? 'unknown'

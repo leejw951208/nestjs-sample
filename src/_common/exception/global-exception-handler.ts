@@ -107,7 +107,6 @@ export class GlobalExceptionHandler implements ExceptionFilter {
         }
 
         // 6. 기타 예상치 못한 에러
-        const status = exception.getStatus()
         const exceptionResponse: IBaseResponse = {
             ...baseResponse,
             ...SERVER_ERROR.GENERAL
@@ -116,6 +115,6 @@ export class GlobalExceptionHandler implements ExceptionFilter {
             ...exceptionResponse,
             stack: exception.stack
         })
-        response.status(status).json(exceptionResponse)
+        response.status(exceptionResponse.status).json(exceptionResponse)
     }
 }

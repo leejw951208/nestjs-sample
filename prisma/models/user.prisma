@@ -10,6 +10,7 @@ model User {
     name      String
     status    UserStatus @default(ACTIVATED)
     posts     Post[]
+    tokens    Token[]
     createdAt DateTime   @default(now()) @map("created_at")
     createdBy Int        @map("created_by")
     updatedAt DateTime?  @updatedAt @map("updated_at")

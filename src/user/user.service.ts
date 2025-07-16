@@ -20,17 +20,17 @@ export class UserService {
 
     async findOne(): Promise<UserResponseDto> {
         const id = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name, 'warn')
-        return plainToInstance(UserResponseDto, findUser, {
+        const foundUser = await this.prisma.user.findUnique({ where: { id } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name, 'warn')
+        return plainToInstance(UserResponseDto, foundUser, {
             excludeExtraneousValues: true
         })
     }
 
     async update(reqDto: UserUpdateDto): Promise<void> {
         const id = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        const foundUser = await this.prisma.user.findUnique({ where: { id } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
         await this.prisma.user.update({
             where: { id },
             data: reqDto
@@ -39,8 +39,8 @@ export class UserService {
 
     async delete(): Promise<void> {
         const id = this.clsService.get('userId')
-        const findUser = await this.prisma.user.findFirst({ where: { id } })
-        if (!findUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
+        const foundUser = await this.prisma.user.findUnique({ where: { id } })
+        if (!foundUser) throw new BaseException(NOT_FOUND.USER_NOT_FOUND, this.constructor.name)
         await this.prisma.user.delete({ where: { id } })
     }
 }
