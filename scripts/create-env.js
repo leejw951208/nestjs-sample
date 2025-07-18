@@ -9,8 +9,8 @@ const envConfig = [
     { key: 'DATABASE_URL', value: 'postgres://postgres:postgres@localhost:5432/database' },
     { key: 'API_PREFIX', value: 'api' },
     { key: 'API_VERSIONING', value: 'v1' },
-    { key: 'JWT_SECRET_KEY', value: '1q2w3e4r5t6y7u8i9o0p' },
-    { key: 'JWT_ACCESS_KEY', value: 'nestjs-access-key-2024' },
+    { key: 'JWT_SECRET_KEY', value: '' },
+    { key: 'JWT_ACCESS_KEY', value: '' },
     { key: 'JWT_ACCESS_EXPIRES_IN', value: '1h' },
     { key: 'JWT_REFRESH_EXPIRES_IN', value: '7d' },
     { key: 'APP_NAME', value: 'NestJS-Sample' },
@@ -20,11 +20,11 @@ const envConfig = [
 ]
 
 function createEnvFile() {
-    const envPath = path.resolve(process.cwd(), '.env.local')
+    const envPath = path.resolve(process.cwd(), '.env')
 
     // .env 파일이 이미 존재하는지 확인
     if (fs.existsSync(envPath)) {
-        console.log('⚠️  .env.local 파일이 이미 존재합니다.')
+        console.log('⚠️  .env 파일이 이미 존재합니다.')
         return
     }
 
@@ -33,12 +33,12 @@ function createEnvFile() {
 
     try {
         fs.writeFileSync(envPath, envContent)
-        console.log('✅ .env.local 파일이 성공적으로 생성되었습니다.')
+        console.log('✅ .env 파일이 성공적으로 생성되었습니다.')
         console.log('📝 다음 환경 변수들이 추가되었습니다:')
         envConfig.forEach((config) => console.log(`   - ${config.key}=${config.value}`))
         console.log('\n💡 필요에 따라 값을 수정해주세요.')
     } catch (error) {
-        console.error('❌ .env.local 파일 생성 중 오류가 발생했습니다:', error.message)
+        console.error('❌ .env 파일 생성 중 오류가 발생했습니다:', error.message)
         process.exit(1)
     }
 }
