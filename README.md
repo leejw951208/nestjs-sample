@@ -80,6 +80,8 @@ yarn db:migrate
 
 ### 6. 애플리케이션 실행
 
+#### 로컬 실행
+
 ```bash
 # 개발 모드
 yarn start:local
@@ -87,6 +89,23 @@ yarn start:local
 # 또는 프로덕션 모드
 yarn build
 yarn start:prod
+```
+
+#### Docker 실행
+
+```bash
+# Docker Compose로 전체 애플리케이션 실행 (PostgreSQL 포함)
+docker compose up -d
+
+# 특정 서비스 로그 확인
+docker logs -f nestjs-sample-app
+docker logs -f nestjs-sample-db
+
+# 애플리케이션 중지
+docker compose down
+
+# 볼륨 포함 완전 삭제
+docker compose down -v
 ```
 
 ## 📁 프로젝트 구조
