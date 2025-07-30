@@ -1,17 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { PRISMA_SERVICE } from '../_common/prisma/prisma.module'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import { Logger } from 'winston'
-import { PrismaService } from '../_common/prisma/prisma.service'
-import { ClsService } from 'nestjs-cls'
-import { NOT_FOUND } from '../_common/exception/error.code'
-import { BaseException } from '../_common/exception/base.exception'
-import { PostResponseDto } from './dto/post-response.dto'
 import { plainToInstance } from 'class-transformer'
-import { PostSaveDto } from './dto/post-save.dto'
-import { PostModel } from './model/post.model'
-import { PostUpdateDto } from './dto/post-update.dto'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { ClsService } from 'nestjs-cls'
+import { Logger } from 'winston'
+import { BaseException } from '../_common/exception/base.exception'
+import { NOT_FOUND } from '../_common/exception/error.code'
+import { PRISMA_SERVICE } from '../_common/prisma/prisma.module'
+import { PrismaService } from '../_common/prisma/prisma.service'
 import { PostPageableRequestDto } from './dto/post-pageable-request.dto'
+import { PostResponseDto } from './dto/post-response.dto'
+import { PostSaveDto } from './dto/post-save.dto'
+import { PostUpdateDto } from './dto/post-update.dto'
+import { PostModel } from './model/post.model'
 
 @Injectable()
 export class PostService {
@@ -23,13 +23,12 @@ export class PostService {
 
     async findPage(searchCondition: PostPageableRequestDto): Promise<[PostResponseDto[], number]> {
         const foundPosts = await this.prisma.post.findMany({
-            orderBy: { id: 'desc' },
+            orderBy: { id: 'asc' },
             skip: (searchCondition.page - 1) * searchCondition.size,
             take: searchCondition.size
         })
 
         const totalCount = await this.prisma.post.count({})
-
         return [plainToInstance(PostResponseDto, foundPosts, { excludeExtraneousValues: true }), totalCount]
     }
 
@@ -55,7 +54,7 @@ export class PostService {
 
         const foundPost = await this.prisma.post.findUnique({ where: { id } })
         if (!foundPost) throw new BaseException(NOT_FOUND.GENERAL, this.constructor.name)
-        await this.prisma.post.update({ where: { id }, data: { ...foundUser, ...reqDto } })
+        await this.prisma.post.update({ where: { id }, data: { ...foundPost, ...reqDto } })
     }
 
     async delete(id: number): Promise<void> {

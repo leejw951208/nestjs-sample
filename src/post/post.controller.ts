@@ -1,10 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Query } from '@nestjs/common'
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common'
 import { PostService } from './post.service'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { PostPageableResponseDto } from './dto/post-pageable-response.dto'
 import { PostPageableRequestDto } from './dto/post-pageable-request.dto'
 import { PostResponseDto } from './dto/post-response.dto'
 import { PostSaveDto } from './dto/post-save.dto'
+import * as exceljs from 'exceljs'
+import { plainToInstance } from 'class-transformer'
+import { Response } from 'express'
+import { PostUpdateDto } from './dto/post-update.dto'
 
 const path = 'post'
 @ApiTags(path)
@@ -41,5 +45,16 @@ export class PostController {
     @Post()
     async save(@Body() reqDto: PostSaveDto): Promise<void> {
         await this.postService.save(reqDto)
+    }
+
+    @ApiOperation({
+        summary: '수정'
+    })
+    @ApiParam({ type: Number, name: 'id', description: 'Post ID(PK)' })
+    @ApiBody({ type: PostUpdateDto })
+    @ApiResponse({ status: HttpStatus.OK })
+    @Patch(':id')
+    async update(@Param('id') id: number, @Body() reqDto: PostUpdateDto): Promise<void> {
+        await this.postService.update(id, reqDto)
     }
 }
